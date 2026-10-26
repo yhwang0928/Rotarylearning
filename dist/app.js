@@ -264,11 +264,31 @@ const drawer = document.querySelector("#drawer");
 const drawerContent = document.querySelector("#drawerContent");
 const drawerClose = document.querySelector("#drawerClose");
 const backdrop = document.querySelector("#backdrop");
+const campus = document.querySelector("#campus");
+const campusArt = document.querySelector(".campus-art");
+const mobilePanHint = document.querySelector("#mobilePanHint");
+const mobileMapQuery = window.matchMedia("(max-width: 720px)");
 const welcomeCard = document.querySelector("#welcomeCard");
 const searchDialog = document.querySelector("#searchDialog");
 const searchInput = document.querySelector("#knowledgeSearch");
 const searchResults = document.querySelector("#searchResults");
 let lastFocused = null;
+let mobileMapReadyAt = 0;
+
+function initializeMobileMap() {
+  if (!mobileMapQuery.matches) {
+    campus.removeAttribute("data-mobile-map-ready");
+    mobilePanHint.classList.remove("is-hidden");
+    return;
+  }
+  if (campus.dataset.mobileMapReady === "true") return;
+  window.requestAnimationFrame(() => {
+    const maxScroll = Math.max(0, campus.scrollWidth - campus.clientWidth);
+    campus.scrollLeft = maxScroll / 2;
+    campus.dataset.mobileMapReady = "true";
+    mobileMapReadyAt = performance.now();
+  });
+}
 
 function cardMarkup([icon, title, meta, url, lessonKey]) {
   const contents = `
@@ -424,6 +444,24 @@ document.querySelector("#searchButton").addEventListener("click", () => {
   window.setTimeout(() => searchInput.focus(), 0);
 });
 searchInput.addEventListener("input", () => renderSearch(searchInput.value));
+
+if (campusArt.complete) initializeMobileMap();
+else campusArt.addEventListener("load", initializeMobileMap, { once: true });
+
+mobileMapQuery.addEventListener("change", () => {
+  campus.removeAttribute("data-mobile-map-ready");
+  initializeMobileMap();
+});
+
+campus.addEventListener("pointerdown", () => {
+  if (mobileMapQuery.matches) mobilePanHint.classList.add("is-hidden");
+}, { passive: true });
+
+campus.addEventListener("scroll", () => {
+  if (mobileMapQuery.matches && performance.now() - mobileMapReadyAt > 500) {
+    mobilePanHint.classList.add("is-hidden");
+  }
+}, { passive: true });
 
 document.addEventListener("keydown", (event) => {
   if (event.key === "Escape" && drawer.classList.contains("is-open")) closeRoom();

@@ -40,14 +40,17 @@
         </nav>
       </header>
 
-      <section class="campus" id="campus" aria-label="扶輪知識校園互動地圖">
+      <section class="campus" id="campus" aria-label="扶輪知識校園互動地圖" aria-describedby="mobilePanHint" tabindex="0">
         <div class="floating-cloud cloud-one" aria-hidden="true"></div>
         <div class="floating-cloud cloud-two" aria-hidden="true"></div>
+
+        <p class="mobile-pan-hint" id="mobilePanHint"><span aria-hidden="true">↔</span> 左右滑動探索完整校園</p>
 
         <div class="map-stage">
           <img
             class="campus-art"
             src="./assets/rotarylearning-campus.png"
+            draggable="false"
             alt="可愛人物在海島立體扶輪知識校園交流學習，場景包含校長室、教學大樓、圖書室、禮堂、服務廣場與公園。"
           />
           <div class="sea-glow" aria-hidden="true"></div>
