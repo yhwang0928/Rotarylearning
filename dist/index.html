@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#174991" />
+    <meta
+      name="description"
+      content="Rotarylearning 扶輪知識小學堂，從校園探索扶輪，從原文確認知識。"
+    />
+    <title>Rotarylearning｜扶輪知識小學堂</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#campus">跳到校園</a>
+
+    <main class="app-shell">
+      <header class="topbar" aria-label="網站導覽">
+        <a class="brand" href="#campus" aria-label="Rotarylearning 首頁">
+          <span class="brand-mark" aria-hidden="true">
+            <span class="brand-book"></span>
+            <span class="brand-sun"></span>
+          </span>
+          <span class="brand-copy">
+            <strong>Rotarylearning</strong>
+            <small>扶輪知識小學堂</small>
+          </span>
+        </a>
+
+        <nav class="top-actions" aria-label="快速功能">
+          <button class="icon-button" id="searchButton" type="button" aria-label="搜尋扶輪知識">
+            <span aria-hidden="true">⌕</span><span class="action-text">搜尋</span>
+          </button>
+          <button class="icon-button" id="motionButton" type="button" aria-pressed="false" aria-label="暫停場景動畫">
+            <span aria-hidden="true">Ⅱ</span><span class="action-text">暫停</span>
+          </button>
+          <button class="icon-button" id="guideButton" type="button" aria-label="開啟校園導覽">
+            <span aria-hidden="true">☰</span><span class="action-text">導覽</span>
+          </button>
+        </nav>
+      </header>
+
+      <section class="campus" id="campus" aria-label="扶輪知識校園互動地圖">
+        <img
+          class="campus-art"
+          src="./assets/rotarylearning-campus.png"
+          alt="海島上的立體扶輪知識校園，有校長室、教學大樓、圖書室、禮堂、服務廣場與散步的社友。"
+        />
+        <div class="sea-glow" aria-hidden="true"></div>
+        <div class="floating-cloud cloud-one" aria-hidden="true"></div>
+        <div class="floating-cloud cloud-two" aria-hidden="true"></div>
+
+        <div class="welcome-card" id="welcomeCard">
+          <button class="welcome-close" id="welcomeClose" type="button" aria-label="關閉歡迎訊息">×</button>
+          <p class="eyebrow">WELCOME TO ROTARYLEARNING</p>
+          <h1>今天想去哪一間教室？</h1>
+          <p>點選校園建築，和社友一起認識扶輪。每堂課都附上原始資料，學得輕鬆，也查得到依據。</p>
+          <div class="welcome-actions">
+            <button class="primary-button" id="startExplore" type="button">開始逛校園 <span>→</span></button>
+            <button class="text-button" id="openGuide" type="button">先看學習路線</button>
+          </div>
+        </div>
+
+        <div class="hotspots" aria-label="校園地點">
+          <button class="hotspot hotspot-principal" type="button" data-room="principal" aria-label="進入校長室">
+            <span class="hotspot-icon" aria-hidden="true">★</span>
+            <span><small>RI 總部</small>校長室</span>
+          </button>
+          <button class="hotspot hotspot-classroom" type="button" data-room="classroom" aria-label="進入教學大樓">
+            <span class="hotspot-icon" aria-hidden="true">✎</span>
+            <span><small>主題課程</small>教學大樓</span>
+          </button>
+          <button class="hotspot hotspot-library" type="button" data-room="library" aria-label="進入圖書室">
+            <span class="hotspot-icon" aria-hidden="true">▤</span>
+            <span><small>原文查詢</small>圖書室</span>
+          </button>
+          <button class="hotspot hotspot-plaza" type="button" data-room="plaza" aria-label="前往服務廣場">
+            <span class="hotspot-icon" aria-hidden="true">♡</span>
+            <span><small>服務案例</small>服務廣場</span>
+          </button>
+          <button class="hotspot hotspot-auditorium" type="button" data-room="auditorium" aria-label="進入校園禮堂">
+            <span class="hotspot-icon" aria-hidden="true">♪</span>
+            <span><small>活動講座</small>校園禮堂</span>
+          </button>
+        </div>
+
+        <aside class="campus-status" aria-label="校園資訊">
+          <div class="status-face" aria-hidden="true">☺</div>
+          <div><strong>校園開放中</strong><span>5 個地點・6 間主題教室</span></div>
+        </aside>
+
+        <p class="scene-hint"><span aria-hidden="true">↖</span> 點一棟建築，開始探索</p>
+      </section>
+    </main>
+
+    <div class="backdrop" id="backdrop" hidden></div>
+
+    <aside class="drawer" id="drawer" aria-hidden="true" aria-labelledby="drawerTitle">
+      <div class="drawer-handle" aria-hidden="true"></div>
+      <button class="drawer-close" id="drawerClose" type="button" aria-label="關閉內容">×</button>
+      <div id="drawerContent"></div>
+    </aside>
+
+    <dialog class="search-dialog" id="searchDialog" aria-labelledby="searchTitle">
+      <form method="dialog" class="dialog-head">
+        <div>
+          <p class="eyebrow">KNOWLEDGE SEARCH</p>
+          <h2 id="searchTitle">搜尋扶輪知識</h2>
+        </div>
+        <button class="drawer-close dialog-close" value="cancel" aria-label="關閉搜尋">×</button>
+      </form>
+      <label class="search-field">
+        <span aria-hidden="true">⌕</span>
+        <input id="knowledgeSearch" type="search" placeholder="輸入政策、手冊或關鍵字" autocomplete="off" />
+      </label>
+      <div class="search-results" id="searchResults" aria-live="polite"></div>
+    </dialog>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
+
