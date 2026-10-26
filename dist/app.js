@@ -78,116 +78,8 @@ const knowledgeItems = Object.values(rooms).flatMap((room) =>
   room.cards.map(([icon, title, meta, url]) => ({ icon, title, meta, url, room: room.title }))
 );
 
-const campusPoints = {
-  gate: { x: 50, y: 88 },
-  bridgeTop: { x: 50, y: 70 },
-  circleSouth: { x: 50, y: 62 },
-  circleSouthWest: { x: 43, y: 60 },
-  circleWest: { x: 38, y: 53 },
-  circleNorthWest: { x: 39, y: 40 },
-  circleNorth: { x: 50, y: 37 },
-  circleNorthEast: { x: 61, y: 40 },
-  circleEast: { x: 65, y: 52 },
-  circleSouthEast: { x: 61, y: 59 },
-  principalJunction: { x: 33, y: 39 },
-  principal: { x: 24, y: 33 },
-  classroom: { x: 50, y: 34 },
-  libraryJunction: { x: 67, y: 39 },
-  library: { x: 74, y: 35 },
-  auditoriumJunction: { x: 68, y: 58 },
-  auditorium: { x: 75, y: 65 },
-  parkEntry: { x: 33, y: 52 },
-  garden: { x: 29, y: 47 },
-  parkBench: { x: 20, y: 54 },
-  parkTree: { x: 25, y: 60 },
-  parkPath: { x: 32, y: 62 }
-};
-
-const actorProfiles = [
-  { id: "governor", label: "總監", image: "./assets/characters/governor.png", route: ["principal", "principalJunction", "circleNorthWest", "circleNorth", "classroom", "circleNorth", "circleNorthEast", "circleEast", "auditoriumJunction", "auditorium", "auditoriumJunction", "circleSouthEast", "circleSouth", "circleSouthWest", "circleWest", "circleNorthWest", "principalJunction"], messages: ["早安！", "去上課囉", "到處看看"] },
-  { id: "assistant", label: "助理總監", image: "./assets/characters/assistant-governor.png", route: ["library", "libraryJunction", "circleNorthEast", "circleNorth", "classroom", "circleNorth", "circleNorthWest", "principalJunction", "principal", "principalJunction", "circleNorthWest", "circleNorth", "circleNorthEast", "libraryJunction"], messages: ["找份資料", "一起學習", "等等見！"] },
-  { id: "member", label: "社友", image: "./assets/characters/member.png", route: ["gate", "bridgeTop", "circleSouth", "circleSouthEast", "circleEast", "circleNorthEast", "libraryJunction", "library", "libraryJunction", "circleNorthEast", "circleNorth", "classroom", "circleNorth", "circleNorthWest", "circleWest", "circleSouthWest", "circleSouth", "bridgeTop"], messages: ["來學新知", "去圖書室", "服務出發"] },
-  { id: "reader", label: "閱讀中", image: "./assets/characters/reader.png", route: ["parkBench", "garden", "parkEntry", "circleWest", "circleSouthWest", "parkPath", "parkTree"], messages: ["閱讀中 📖", "找到好書", "筆記一下"] },
-  { id: "gardener", label: "照顧花園", image: "./assets/characters/gardener.png", route: ["parkTree", "parkPath", "circleSouthWest", "circleWest", "parkEntry", "garden", "parkBench"], messages: ["幫花澆水", "花開了！", "整理花園"] },
-  { id: "photographer", label: "記錄校園", image: "./assets/characters/photographer.png", route: ["garden", "parkEntry", "circleWest", "circleSouthWest", "circleSouth", "circleSouthEast", "circleEast", "circleNorthEast", "circleNorth", "circleNorthWest", "circleWest", "parkEntry"], messages: ["拍張照片 📷", "風景真好", "笑一個！"] }
-];
-
-const actorAnimations = new Map();
-const actorTimers = new Set();
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 let motionPaused = false;
-
-function actorMarkup(profile) {
-  return `<div class="campus-actor is-resting" data-actor="${profile.id}">
-    <span class="actor-badge">${profile.label}</span>
-    <span class="actor-bubble"></span>
-    <span class="actor-figure"><img src="${profile.image}" alt="" /></span>
-  </div>`;
-}
-
-function scheduleActor(callback, delay) {
-  const timer = window.setTimeout(() => {
-    actorTimers.delete(timer);
-    callback();
-  }, delay);
-  actorTimers.add(timer);
-}
-
-function restActor(actor, profile, nextStep) {
-  const message = profile.messages[Math.floor(Math.random() * profile.messages.length)];
-  actor.querySelector(".actor-bubble").textContent = message;
-  actor.classList.remove("is-walking");
-  actor.classList.add("is-resting", "is-acting");
-  scheduleActor(() => {
-    actor.classList.remove("is-acting");
-    scheduleActor(nextStep, 900 + Math.random() * 1800);
-  }, 2200 + Math.random() * 2600);
-}
-
-function moveActor(actor, profile, routeIndex) {
-  const fromName = profile.route[routeIndex % profile.route.length];
-  const nextIndex = (routeIndex + 1) % profile.route.length;
-  const toName = profile.route[nextIndex];
-  const from = campusPoints[fromName];
-  const to = campusPoints[toName];
-  const distance = Math.hypot(to.x - from.x, to.y - from.y);
-  const duration = Math.max(1800, Math.min(5200, distance * 300));
-  actor.classList.toggle("faces-left", to.x < from.x);
-  actor.classList.remove("is-resting", "is-acting");
-  actor.classList.add("is-walking");
-  actor.style.zIndex = String(Math.round(to.y));
-  const animation = actor.animate(
-    [{ left: `${from.x}%`, top: `${from.y}%` }, { left: `${to.x}%`, top: `${to.y}%` }],
-    { duration, easing: "linear", fill: "forwards" }
-  );
-  actorAnimations.set(actor, animation);
-  if (motionPaused) animation.pause();
-  animation.onfinish = () => {
-    actor.style.left = `${to.x}%`;
-    actor.style.top = `${to.y}%`;
-    animation.cancel();
-    actorAnimations.delete(actor);
-    restActor(actor, profile, () => moveActor(actor, profile, nextIndex));
-  };
-}
-
-function initCampusActors() {
-  const container = document.querySelector("#campusActors");
-  container.innerHTML = actorProfiles.map(actorMarkup).join("");
-  actorProfiles.forEach((profile, index) => {
-    const actor = container.querySelector(`[data-actor="${profile.id}"]`);
-    const point = campusPoints[profile.route[0]];
-    actor.style.left = `${point.x}%`;
-    actor.style.top = `${point.y}%`;
-    actor.style.zIndex = String(Math.round(point.y));
-    actor.querySelector(".actor-bubble").textContent = profile.messages[0];
-    if (reducedMotion.matches) {
-      actor.classList.add("is-acting");
-      return;
-    }
-    scheduleActor(() => moveActor(actor, profile, 0), 1000 + index * 900);
-  });
-}
 
 const drawer = document.querySelector("#drawer");
 const drawerContent = document.querySelector("#drawerContent");
@@ -268,7 +160,7 @@ document.querySelector("#guideButton").addEventListener("click", (event) => open
 document.querySelector("#motionButton").addEventListener("click", (event) => {
   const paused = document.body.classList.toggle("motion-paused");
   motionPaused = paused;
-  actorAnimations.forEach((animation) => paused ? animation.pause() : animation.play());
+  window.dispatchEvent(new CustomEvent("rotary-motion", { detail: { paused } }));
   event.currentTarget.setAttribute("aria-pressed", String(paused));
   event.currentTarget.setAttribute("aria-label", paused ? "播放場景動畫" : "暫停場景動畫");
   event.currentTarget.querySelector("span:first-child").textContent = paused ? "▶" : "Ⅱ";
@@ -287,4 +179,3 @@ document.addEventListener("keydown", (event) => {
 });
 
 renderSearch();
-initCampusActors();
