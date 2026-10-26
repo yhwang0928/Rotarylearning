@@ -289,8 +289,18 @@ function ctaMarkup([label, url, lessonKey]) {
 function showDrawer() {
   backdrop.hidden = false;
   drawer.classList.add("is-open");
+  document.body.classList.add("drawer-open");
   drawer.setAttribute("aria-hidden", "false");
   drawer.scrollTop = 0;
+}
+
+function setActiveRoom(roomKey = null) {
+  document.querySelectorAll("[data-room]").forEach((button) => {
+    const isActive = roomKey && button.dataset.room === roomKey;
+    button.classList.toggle("is-active", Boolean(isActive));
+    if (isActive) button.setAttribute("aria-current", "page");
+    else button.removeAttribute("aria-current");
+  });
 }
 
 function openRoom(roomKey, trigger) {
@@ -308,6 +318,7 @@ function openRoom(roomKey, trigger) {
     <div class="card-list">${room.cards.map(cardMarkup).join("")}</div>
     ${ctaMarkup(room.cta)}
     <p class="room-note">${room.note}</p>`;
+  setActiveRoom(roomKey);
   showDrawer();
   drawerClose.focus();
 }
@@ -341,12 +352,15 @@ function openLesson(lessonKey, trigger) {
       <h3>資料來源</h3>
       <div class="lesson-sources">${lesson.sources.map(([label, url]) => `<a href="${url}" target="_blank" rel="noreferrer">${label}<span aria-hidden="true">↗</span></a>`).join("")}</div>
     </section>`;
+  setActiveRoom(lesson.room);
   showDrawer();
   drawerContent.querySelector(".lesson-back").focus();
 }
 
 function closeRoom() {
   drawer.classList.remove("is-open");
+  document.body.classList.remove("drawer-open");
+  setActiveRoom();
   drawer.setAttribute("aria-hidden", "true");
   window.setTimeout(() => { backdrop.hidden = true; }, 300);
   if (lastFocused) lastFocused.focus();

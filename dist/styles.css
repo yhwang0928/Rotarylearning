@@ -21,6 +21,7 @@
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
 body { margin: 0; min-width: 320px; min-height: 100vh; background: #bfeaf4; overflow: hidden; }
+body.drawer-open { overflow: hidden; }
 button, input { font: inherit; }
 button, a { -webkit-tap-highlight-color: transparent; }
 button:focus-visible, a:focus-visible, input:focus-visible { outline: 4px solid rgba(255, 192, 46, 0.65); outline-offset: 3px; }
@@ -88,6 +89,7 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 4px solid 
 .campus-status strong { color: var(--blue-950); }
 .campus-status span { color: var(--muted); font-size: .78rem; font-weight: 700; }
 .scene-hint { position: absolute; left: 50%; bottom: 26px; z-index: 5; margin: 0; padding: 9px 14px; border-radius: 999px; color: white; background: rgba(6,44,78,.64); backdrop-filter: blur(12px); font-size: .8rem; font-weight: 800; transform: translateX(-50%); }
+.mobile-campus-nav { display: none; }
 
 .backdrop { position: fixed; inset: 0; z-index: 40; background: rgba(5,27,54,.42); backdrop-filter: blur(5px); }
 .drawer { position: fixed; z-index: 50; top: 12px; right: 12px; bottom: 12px; width: min(460px, calc(100vw - 24px)); padding: 28px; border: 2px solid rgba(255,255,255,.85); border-radius: 30px; background: #fffdf6; box-shadow: -24px 0 70px rgba(8,35,72,.28); overflow-y: auto; transform: translateX(calc(100% + 40px)); transition: transform .35s cubic-bezier(.2,.8,.2,1); }
@@ -162,20 +164,76 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 4px solid 
   .campus-status, .scene-hint { display: none; }
 }
 
-@media (max-width: 620px) {
-  .campus { min-height: 820px; }
-  .brand { gap: 9px; padding: 9px 12px; }
-  .rotary-logo { width: 106px; }
-  .brand-divider { height: 34px; }
-  .brand-copy strong { font-size: .95rem; }
-  .hotspot-principal { left: 14%; top: 27%; }
-  .hotspot-library { left: 86%; top: 28%; }
-  .hotspot-auditorium { left: 86%; top: 61%; }
-  .welcome-card { padding: 20px; border-radius: 24px; }
-  .welcome-card h1 { max-width: 280px; }
-  .drawer { inset: auto 8px 8px; width: calc(100vw - 16px); max-height: 82vh; border-radius: 28px; transform: translateY(calc(100% + 30px)); }
+@media (max-width: 720px) {
+  body { overflow: hidden; overscroll-behavior: none; }
+  .app-shell, .campus { height: 100svh; min-height: 0; }
+  .campus::after { background: linear-gradient(180deg, rgba(8,44,86,.04) 45%, rgba(5,35,67,.5) 100%); }
+  .map-stage { left: 52%; width: max(100vw, 177.78svh); height: max(100svh, 56.25vw); }
+  .floating-cloud { opacity: .3; }
+
+  .topbar { inset: max(8px, env(safe-area-inset-top)) 8px auto; gap: 8px; }
+  .brand { gap: 7px; padding: 7px 10px 7px 8px; border-radius: 18px; }
+  .rotary-logo { width: 82px; }
+  .brand-divider { height: 30px; }
+  .brand-copy strong { font-size: .82rem; }
+  .brand-copy small { display: none; }
+  .top-actions { gap: 2px; padding: 4px; border-radius: 18px; }
+  .icon-button { width: 44px; min-height: 44px; }
+  #guideButton { display: none; }
+
+  .hotspots { display: none; }
+  .welcome-card { left: 10px; right: 10px; bottom: calc(88px + env(safe-area-inset-bottom)); width: auto; padding: 15px 48px 15px 16px; border-radius: 22px; }
+  .welcome-close { top: 10px; right: 10px; width: 36px; height: 36px; }
+  .welcome-card .eyebrow { display: none; }
+  .welcome-card h1 { max-width: none; font-size: 1.2rem; letter-spacing: -.02em; }
+  .welcome-card p:not(.eyebrow) { display: -webkit-box; margin: 7px 0 12px; overflow: hidden; font-size: .82rem; line-height: 1.5; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+  .welcome-actions { gap: 10px; }
+  .primary-button { min-height: 44px; padding: 0 15px; border-radius: 14px; box-shadow: 0 5px 0 #d8991a, 0 10px 18px rgba(124,82,0,.18); font-size: .86rem; }
+  .text-button { min-height: 44px; font-size: .82rem; }
+
+  .mobile-campus-nav { position: fixed; left: 8px; right: 8px; bottom: max(8px, env(safe-area-inset-bottom)); z-index: 30; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 3px; padding: 6px; border: 2px solid rgba(255,255,255,.92); border-radius: 23px; background: rgba(255,253,247,.96); box-shadow: 0 14px 34px rgba(6,35,68,.28); backdrop-filter: blur(18px); }
+  .mobile-campus-button { display: grid; place-items: center; align-content: center; gap: 3px; min-width: 0; min-height: 62px; padding: 5px 2px; border: 0; border-radius: 16px; color: var(--blue-950); background: transparent; cursor: pointer; }
+  .mobile-campus-button span { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 11px; color: var(--blue-800); background: #eaf5ff; font-size: 1rem; font-weight: 900; }
+  .mobile-campus-button strong { overflow: hidden; font-size: .66rem; line-height: 1; text-overflow: ellipsis; white-space: nowrap; }
+  .mobile-campus-button.is-active { color: white; background: var(--blue-800); }
+  .mobile-campus-button.is-active span { color: var(--blue-950); background: var(--gold-light); }
+
+  .backdrop { z-index: 40; background: rgba(5,27,54,.28); backdrop-filter: none; }
+  .drawer { inset: 0; width: 100%; height: 100dvh; max-height: none; padding: 18px 18px calc(30px + env(safe-area-inset-bottom)); border: 0; border-radius: 0; box-shadow: none; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; transform: translateY(100%); }
   .drawer.is-open { transform: translateY(0); }
-  .drawer-handle { display: block; width: 48px; height: 5px; margin: -13px auto 17px; border-radius: 99px; background: #c8d7e1; }
+  .drawer-handle { display: none; }
+  .drawer-close { position: fixed; top: max(14px, env(safe-area-inset-top)); right: 14px; width: 48px; height: 48px; box-shadow: 0 5px 16px rgba(8,35,72,.18); }
+  .room-hero { margin: -18px -18px 20px; min-height: 190px; padding: calc(72px + env(safe-area-inset-top)) 72px 24px 20px; border-radius: 0 0 30px 30px; }
+  .room-hero .room-emoji { margin-bottom: 14px; font-size: 2rem; }
+  .room-hero h2 { font-size: 1.75rem; }
+  .room-hero p { font-size: .9rem; line-height: 1.55; }
+  .room-intro { display: none; }
+  .card-list { gap: 10px; margin: 14px 0; }
+  .room-card { min-height: 70px; padding: 13px 12px; border-radius: 18px; }
+  .room-card-icon { width: 44px; height: 44px; }
+  .room-card strong { font-size: 1rem; }
+  .room-card small { font-size: .78rem; }
+  .room-cta { width: 100%; min-height: 52px; }
+  .room-note { margin-bottom: 0; }
+  .lesson-hero { min-height: 220px; padding-top: calc(86px + env(safe-area-inset-top)); }
+  .lesson-back { top: max(18px, env(safe-area-inset-top)); left: 16px; min-height: 44px; padding: 0 14px; }
+  .lesson-lead { font-size: 1rem; line-height: 1.7; }
+  .lesson-section { padding: 16px; border-radius: 18px; }
+  .lesson-points { gap: 12px; line-height: 1.6; }
+  .lesson-sources a { min-height: 48px; }
+
+  .search-dialog { inset: 0; width: 100vw; max-width: none; height: 100dvh; max-height: none; margin: 0; padding: calc(20px + env(safe-area-inset-top)) 16px calc(20px + env(safe-area-inset-bottom)); border: 0; border-radius: 0; overflow: hidden; }
+  .dialog-head { margin-bottom: 14px; }
+  .dialog-head h2 { font-size: 1.55rem; }
+  .dialog-close { position: static; width: 48px; height: 48px; }
+  .search-field { border-radius: 16px; }
+  .search-field input { min-height: 54px; font-size: 16px; }
+  .search-results { max-height: calc(100dvh - 150px - env(safe-area-inset-top) - env(safe-area-inset-bottom)); padding-bottom: 16px; overscroll-behavior: contain; }
+}
+
+@media (max-width: 720px) and (max-height: 650px) {
+  .welcome-card p:not(.eyebrow), .welcome-actions .text-button { display: none; }
+  .welcome-card { padding-top: 14px; padding-bottom: 14px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
