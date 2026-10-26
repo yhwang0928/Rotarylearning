@@ -79,7 +79,6 @@ const knowledgeItems = Object.values(rooms).flatMap((room) =>
 );
 
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-let motionPaused = false;
 
 const drawer = document.querySelector("#drawer");
 const drawerContent = document.querySelector("#drawerContent");
@@ -159,7 +158,6 @@ document.querySelector("#guideButton").addEventListener("click", (event) => open
 
 document.querySelector("#motionButton").addEventListener("click", (event) => {
   const paused = document.body.classList.toggle("motion-paused");
-  motionPaused = paused;
   window.dispatchEvent(new CustomEvent("rotary-motion", { detail: { paused } }));
   event.currentTarget.setAttribute("aria-pressed", String(paused));
   event.currentTarget.setAttribute("aria-label", paused ? "播放場景動畫" : "暫停場景動畫");

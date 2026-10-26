@@ -52,8 +52,12 @@
           />
           <div class="sea-glow" aria-hidden="true"></div>
 
-          <canvas class="people-canvas" id="peopleCanvas" aria-hidden="true"></canvas>
-          <div class="people-labels" id="peopleLabels" aria-hidden="true"></div>
+          <div class="people-layer" id="peopleLayer" aria-hidden="true">
+            <div class="campus-walker" id="governorWalker">
+              <div class="walker-shadow"></div>
+              <div class="walker-sprite"></div>
+            </div>
+          </div>
 
           <div class="hotspots" aria-label="校園地點">
             <button class="hotspot hotspot-principal" type="button" data-room="principal" aria-label="進入校長室">
@@ -92,10 +96,10 @@
 
         <aside class="campus-status" aria-label="校園資訊">
           <div class="status-face" aria-hidden="true">☺</div>
-          <div><strong>校園開放中</strong><span>5 個地點・6 間主題教室</span></div>
+          <div><strong>總監巡堂中</strong><span>第一位角色・道路動態測試</span></div>
         </aside>
 
-        <p class="scene-hint"><span aria-hidden="true">↖</span> 點一棟建築，開始探索</p>
+        <p class="scene-hint"><span aria-hidden="true">↖</span> 總監會沿步道巡堂・點建築開始探索</p>
       </section>
     </main>
 
@@ -123,6 +127,6 @@
     </dialog>
 
     <script src="./app.js"></script>
-    <script type="module" src="./people-3d.js"></script>
+    <script src="./people-sprites.js"></script>
   </body>
 </html>
