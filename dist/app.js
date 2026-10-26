@@ -78,6 +78,110 @@ const knowledgeItems = Object.values(rooms).flatMap((room) =>
   room.cards.map(([icon, title, meta, url]) => ({ icon, title, meta, url, room: room.title }))
 );
 
+const campusPoints = {
+  principal: { x: 18, y: 35 },
+  classroom: { x: 48, y: 34 },
+  library: { x: 76, y: 37 },
+  plaza: { x: 52, y: 59 },
+  auditorium: { x: 78, y: 65 },
+  gate: { x: 47, y: 80 },
+  garden: { x: 34, y: 51 },
+  parkBench: { x: 20, y: 58 },
+  parkTree: { x: 27, y: 50 },
+  parkPath: { x: 31, y: 62 }
+};
+
+const actorProfiles = [
+  { id: "governor", label: "總監", route: ["principal", "plaza", "classroom", "auditorium"], shirt: "#1853a0", accent: "#f8c64a", hair: "#d8d5ce", skin: "#efbb8d", pants: "#203d64", messages: ["早安！", "去上課囉", "到處看看"] },
+  { id: "assistant", label: "助理總監", route: ["library", "plaza", "classroom", "principal"], shirt: "#f28b64", accent: "#fff4d2", hair: "#38241f", skin: "#f1bd91", pants: "#375377", messages: ["找份資料", "一起學習", "等等見！"] },
+  { id: "member", label: "社友", route: ["gate", "classroom", "library", "plaza", "auditorium"], shirt: "#60bba5", accent: "#fff8d9", hair: "#53352c", skin: "#d99b71", pants: "#284865", messages: ["來學新知", "去圖書室", "服務出發"] },
+  { id: "reader", label: "閱讀中", job: "reader", route: ["parkBench", "parkTree", "garden"], shirt: "#8569c7", accent: "#fff", hair: "#52342b", skin: "#f0b98b", pants: "#344767", messages: ["閱讀中 📖", "找到好書", "筆記一下"] },
+  { id: "gardener", label: "照顧花園", job: "gardener", route: ["parkTree", "parkPath", "parkBench"], shirt: "#e9a735", accent: "#fff9dc", hair: "#c9c4b9", skin: "#e6ad7e", pants: "#3d654f", messages: ["幫花澆水", "花開了！", "整理花園"] },
+  { id: "photographer", label: "記錄校園", job: "photographer", route: ["garden", "parkPath", "plaza"], shirt: "#df6d83", accent: "#fff4da", hair: "#2f2424", skin: "#bf7d59", pants: "#314f6f", messages: ["拍張照片 📷", "風景真好", "笑一個！"] }
+];
+
+const actorAnimations = new Map();
+const actorTimers = new Set();
+const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+let motionPaused = false;
+
+function actorMarkup(profile) {
+  return `<div class="campus-actor is-resting" data-actor="${profile.id}" data-job="${profile.job || "traveler"}" style="--shirt:${profile.shirt};--accent:${profile.accent};--hair:${profile.hair};--skin:${profile.skin};--pants:${profile.pants}">
+    <span class="actor-shadow"></span>
+    <span class="actor-badge">${profile.label}</span>
+    <span class="actor-bubble"></span>
+    <span class="actor-figure">
+      <span class="actor-hair"></span><span class="actor-head"></span><span class="actor-body"></span>
+      <span class="actor-arm left"></span><span class="actor-arm right"></span>
+      <span class="actor-leg left"></span><span class="actor-leg right"></span>
+    </span>
+  </div>`;
+}
+
+function scheduleActor(callback, delay) {
+  const timer = window.setTimeout(() => {
+    actorTimers.delete(timer);
+    callback();
+  }, delay);
+  actorTimers.add(timer);
+}
+
+function restActor(actor, profile, nextStep) {
+  const message = profile.messages[Math.floor(Math.random() * profile.messages.length)];
+  actor.querySelector(".actor-bubble").textContent = message;
+  actor.classList.remove("is-walking");
+  actor.classList.add("is-resting", "is-acting");
+  scheduleActor(() => {
+    actor.classList.remove("is-acting");
+    scheduleActor(nextStep, 900 + Math.random() * 1800);
+  }, 2200 + Math.random() * 2600);
+}
+
+function moveActor(actor, profile, routeIndex) {
+  const fromName = profile.route[routeIndex % profile.route.length];
+  const nextIndex = (routeIndex + 1) % profile.route.length;
+  const toName = profile.route[nextIndex];
+  const from = campusPoints[fromName];
+  const to = campusPoints[toName];
+  const distance = Math.hypot(to.x - from.x, to.y - from.y);
+  const duration = Math.max(6500, Math.min(15000, distance * 310));
+  actor.classList.toggle("faces-left", to.x < from.x);
+  actor.classList.remove("is-resting", "is-acting");
+  actor.classList.add("is-walking");
+  actor.style.zIndex = String(Math.round(to.y));
+  const animation = actor.animate(
+    [{ left: `${from.x}%`, top: `${from.y}%` }, { left: `${to.x}%`, top: `${to.y}%` }],
+    { duration, easing: "linear", fill: "forwards" }
+  );
+  actorAnimations.set(actor, animation);
+  if (motionPaused) animation.pause();
+  animation.onfinish = () => {
+    actor.style.left = `${to.x}%`;
+    actor.style.top = `${to.y}%`;
+    animation.cancel();
+    actorAnimations.delete(actor);
+    restActor(actor, profile, () => moveActor(actor, profile, nextIndex));
+  };
+}
+
+function initCampusActors() {
+  const container = document.querySelector("#campusActors");
+  container.innerHTML = actorProfiles.map(actorMarkup).join("");
+  actorProfiles.forEach((profile, index) => {
+    const actor = container.querySelector(`[data-actor="${profile.id}"]`);
+    const point = campusPoints[profile.route[0]];
+    actor.style.left = `${point.x}%`;
+    actor.style.top = `${point.y}%`;
+    actor.style.zIndex = String(Math.round(point.y));
+    actor.querySelector(".actor-bubble").textContent = profile.messages[0];
+    if (reducedMotion.matches) {
+      actor.classList.add("is-acting");
+      return;
+    }
+    scheduleActor(() => moveActor(actor, profile, 0), 1000 + index * 900);
+  });
+}
+
 const drawer = document.querySelector("#drawer");
 const drawerContent = document.querySelector("#drawerContent");
 const drawerClose = document.querySelector("#drawerClose");
@@ -156,6 +260,8 @@ document.querySelector("#guideButton").addEventListener("click", (event) => open
 
 document.querySelector("#motionButton").addEventListener("click", (event) => {
   const paused = document.body.classList.toggle("motion-paused");
+  motionPaused = paused;
+  actorAnimations.forEach((animation) => paused ? animation.pause() : animation.play());
   event.currentTarget.setAttribute("aria-pressed", String(paused));
   event.currentTarget.setAttribute("aria-label", paused ? "播放場景動畫" : "暫停場景動畫");
   event.currentTarget.querySelector("span:first-child").textContent = paused ? "▶" : "Ⅱ";
@@ -174,4 +280,4 @@ document.addEventListener("keydown", (event) => {
 });
 
 renderSearch();
-
+initCampusActors();
