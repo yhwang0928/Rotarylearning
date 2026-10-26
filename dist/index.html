@@ -41,14 +41,42 @@
       </header>
 
       <section class="campus" id="campus" aria-label="扶輪知識校園互動地圖">
-        <img
-          class="campus-art"
-          src="./assets/rotarylearning-campus.png"
-          alt="海島上的立體扶輪知識校園，有校長室、教學大樓、圖書室、禮堂、服務廣場與散步的社友。"
-        />
-        <div class="sea-glow" aria-hidden="true"></div>
         <div class="floating-cloud cloud-one" aria-hidden="true"></div>
         <div class="floating-cloud cloud-two" aria-hidden="true"></div>
+
+        <div class="map-stage">
+          <img
+            class="campus-art"
+            src="./assets/rotarylearning-campus-empty-v2.png"
+            alt="沒有人物的海島立體扶輪知識校園，有校長室、教學大樓、圖書室、禮堂、服務廣場與清楚的步道。"
+          />
+          <div class="sea-glow" aria-hidden="true"></div>
+
+          <div class="campus-actors" id="campusActors" aria-hidden="true"></div>
+
+          <div class="hotspots" aria-label="校園地點">
+            <button class="hotspot hotspot-principal" type="button" data-room="principal" aria-label="進入校長室">
+              <span class="hotspot-icon" aria-hidden="true">★</span>
+              <span><small>RI 總部</small>校長室</span>
+            </button>
+            <button class="hotspot hotspot-classroom" type="button" data-room="classroom" aria-label="進入教學大樓">
+              <span class="hotspot-icon" aria-hidden="true">✎</span>
+              <span><small>主題課程</small>教學大樓</span>
+            </button>
+            <button class="hotspot hotspot-library" type="button" data-room="library" aria-label="進入圖書室">
+              <span class="hotspot-icon" aria-hidden="true">▤</span>
+              <span><small>原文查詢</small>圖書室</span>
+            </button>
+            <button class="hotspot hotspot-plaza" type="button" data-room="plaza" aria-label="前往服務廣場">
+              <span class="hotspot-icon" aria-hidden="true">♡</span>
+              <span><small>服務案例</small>服務廣場</span>
+            </button>
+            <button class="hotspot hotspot-auditorium" type="button" data-room="auditorium" aria-label="進入校園禮堂">
+              <span class="hotspot-icon" aria-hidden="true">♪</span>
+              <span><small>活動講座</small>校園禮堂</span>
+            </button>
+          </div>
+        </div>
 
         <div class="welcome-card" id="welcomeCard">
           <button class="welcome-close" id="welcomeClose" type="button" aria-label="關閉歡迎訊息">×</button>
@@ -59,31 +87,6 @@
             <button class="primary-button" id="startExplore" type="button">開始逛校園 <span>→</span></button>
             <button class="text-button" id="openGuide" type="button">先看學習路線</button>
           </div>
-        </div>
-
-        <div class="campus-actors" id="campusActors" aria-hidden="true"></div>
-
-        <div class="hotspots" aria-label="校園地點">
-          <button class="hotspot hotspot-principal" type="button" data-room="principal" aria-label="進入校長室">
-            <span class="hotspot-icon" aria-hidden="true">★</span>
-            <span><small>RI 總部</small>校長室</span>
-          </button>
-          <button class="hotspot hotspot-classroom" type="button" data-room="classroom" aria-label="進入教學大樓">
-            <span class="hotspot-icon" aria-hidden="true">✎</span>
-            <span><small>主題課程</small>教學大樓</span>
-          </button>
-          <button class="hotspot hotspot-library" type="button" data-room="library" aria-label="進入圖書室">
-            <span class="hotspot-icon" aria-hidden="true">▤</span>
-            <span><small>原文查詢</small>圖書室</span>
-          </button>
-          <button class="hotspot hotspot-plaza" type="button" data-room="plaza" aria-label="前往服務廣場">
-            <span class="hotspot-icon" aria-hidden="true">♡</span>
-            <span><small>服務案例</small>服務廣場</span>
-          </button>
-          <button class="hotspot hotspot-auditorium" type="button" data-room="auditorium" aria-label="進入校園禮堂">
-            <span class="hotspot-icon" aria-hidden="true">♪</span>
-            <span><small>活動講座</small>校園禮堂</span>
-          </button>
         </div>
 
         <aside class="campus-status" aria-label="校園資訊">

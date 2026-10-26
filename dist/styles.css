@@ -46,7 +46,8 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 4px solid 
 
 .campus { position: relative; width: 100vw; height: 100vh; min-height: 650px; isolation: isolate; overflow: hidden; background: #88d9eb; }
 .campus::after { content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none; background: linear-gradient(180deg, rgba(23,73,145,.08), transparent 26%, transparent 72%, rgba(5,42,75,.2)); }
-.campus-art { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 50%; transform: scale(1.015); }
+.map-stage { position: absolute; left: 50%; top: 50%; width: max(100vw, 177.78vh); height: max(100vh, 56.25vw); transform: translate(-50%, -50%); }
+.campus-art { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: fill; }
 .sea-glow { position: absolute; inset: 0; z-index: 2; pointer-events: none; background: radial-gradient(circle at 52% 52%, transparent 40%, rgba(7,64,102,.08) 78%); }
 .floating-cloud { position: absolute; z-index: 2; width: 180px; height: 55px; border-radius: 999px; background: rgba(255,255,255,.75); filter: blur(1px); opacity: .66; animation: cloud-drift 24s linear infinite; pointer-events: none; }
 .floating-cloud::before, .floating-cloud::after { content: ""; position: absolute; background: inherit; border-radius: 50%; }
@@ -56,36 +57,16 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 4px solid 
 .cloud-two { left: 35%; top: 72%; transform: scale(.7); animation-delay: -12s; opacity: .42; }
 
 .campus-actors { position: absolute; inset: 0; z-index: 4; pointer-events: none; }
-.campus-actor { position: absolute; left: 50%; top: 50%; width: 54px; height: 72px; translate: -50% -82%; scale: .8; will-change: left, top; }
-.actor-shadow { position: absolute; left: 50%; bottom: 1px; width: 38px; height: 12px; border-radius: 50%; background: rgba(11, 42, 63, .24); filter: blur(2px); translate: -50% 0; }
-.actor-figure { position: absolute; inset: 0; transform-origin: 50% 86%; filter: drop-shadow(0 5px 4px rgba(8, 41, 65, .2)); }
-.actor-head { position: absolute; z-index: 3; left: 50%; top: 5px; width: 33px; height: 31px; border: 2px solid rgba(92, 51, 34, .24); border-radius: 47% 47% 45% 45%; background: var(--skin, #f3bf91); translate: -50% 0; }
-.actor-head::before { content: ""; position: absolute; left: 8px; top: 14px; width: 4px; height: 5px; border-radius: 50%; background: #19344d; box-shadow: 12px 0 #19344d; }
-.actor-head::after { content: ""; position: absolute; left: 13px; top: 21px; width: 7px; height: 4px; border-bottom: 2px solid #a94e4c; border-radius: 50%; }
-.actor-hair { position: absolute; z-index: 4; left: 50%; top: 2px; width: 35px; height: 18px; border-radius: 52% 52% 34% 34%; background: var(--hair, #3f2a25); translate: -50% 0; }
-.actor-hair::after { content: ""; position: absolute; right: 0; bottom: -8px; width: 7px; height: 14px; border-radius: 0 0 8px 8px; background: inherit; }
-.actor-body { position: absolute; z-index: 2; left: 50%; top: 33px; width: 29px; height: 28px; border: 2px solid rgba(10, 45, 80, .18); border-radius: 10px 10px 8px 8px; background: var(--shirt, #2872c7); translate: -50% 0; }
-.actor-body::before { content: ""; position: absolute; left: 50%; top: -1px; width: 9px; height: 7px; border-radius: 0 0 7px 7px; background: var(--accent, #fff6d4); translate: -50% 0; }
-.actor-arm { position: absolute; z-index: 1; top: 37px; width: 9px; height: 24px; border-radius: 8px; background: var(--shirt, #2872c7); transform-origin: 50% 4px; }
-.actor-arm.left { left: 8px; rotate: 8deg; }
-.actor-arm.right { right: 8px; rotate: -8deg; }
-.actor-leg { position: absolute; z-index: 1; top: 55px; width: 9px; height: 16px; border-radius: 4px 4px 7px 7px; background: var(--pants, #234164); transform-origin: 50% 2px; }
-.actor-leg.left { left: 18px; }
-.actor-leg.right { right: 18px; }
+.campus-actor { position: absolute; left: 50%; top: 50%; width: clamp(58px, 5.4vw, 78px); aspect-ratio: 2 / 3; translate: -50% -88%; will-change: left, top; }
+.actor-figure { position: absolute; inset: 0; transform-origin: 50% 88%; filter: drop-shadow(0 6px 5px rgba(8, 41, 65, .2)); }
+.actor-figure img { display: block; width: 100%; height: 100%; object-fit: contain; }
 .actor-badge { position: absolute; z-index: 5; left: 50%; top: -19px; padding: 3px 7px; border: 2px solid white; border-radius: 999px; color: white; background: var(--blue-800); box-shadow: 0 4px 10px rgba(8, 40, 76, .2); font-size: 9px; font-weight: 900; white-space: nowrap; translate: -50% 0; opacity: 0; transform: translateY(6px) scale(.9); transition: opacity .25s ease, transform .25s ease; }
 .actor-bubble { position: absolute; z-index: 6; left: 50%; top: -48px; min-width: 38px; padding: 5px 8px; border: 2px solid white; border-radius: 11px; color: var(--blue-950); background: #fffdf6; box-shadow: 0 6px 14px rgba(8, 40, 76, .18); font-size: 12px; font-weight: 900; text-align: center; white-space: nowrap; translate: -50% 0; opacity: 0; transform: translateY(7px) scale(.86); transition: opacity .25s ease, transform .25s ease; }
 .actor-bubble::after { content: ""; position: absolute; left: 50%; bottom: -5px; width: 7px; height: 7px; border-right: 2px solid white; border-bottom: 2px solid white; background: #fffdf6; transform: translateX(-50%) rotate(45deg); }
 .campus-actor.is-acting .actor-bubble { opacity: 1; transform: translateY(0) scale(1); }
 .campus-actor.faces-left .actor-figure { transform: scaleX(-1); }
-.campus-actor.is-walking .actor-figure { animation: actor-hop .48s ease-in-out infinite; }
-.campus-actor.is-walking .actor-leg.left { animation: actor-leg-left .48s ease-in-out infinite; }
-.campus-actor.is-walking .actor-leg.right { animation: actor-leg-right .48s ease-in-out infinite; }
-.campus-actor.is-walking .actor-arm.left { animation: actor-arm-left .48s ease-in-out infinite; }
-.campus-actor.is-walking .actor-arm.right { animation: actor-arm-right .48s ease-in-out infinite; }
-.campus-actor.is-acting .actor-arm.right { animation: actor-wave 1s ease-in-out infinite; }
-.campus-actor[data-job="reader"].is-acting .actor-body::after { content: "📖"; position: absolute; left: 50%; top: 8px; font-size: 17px; translate: -50% 0; }
-.campus-actor[data-job="gardener"].is-acting .actor-body::after { content: "💧"; position: absolute; left: 22px; top: 8px; font-size: 17px; }
-.campus-actor[data-job="photographer"].is-acting .actor-body::after { content: "📷"; position: absolute; left: 17px; top: 7px; font-size: 16px; }
+.campus-actor.is-walking .actor-figure { animation: actor-hop .62s ease-in-out infinite; }
+.campus-actor.is-acting .actor-figure { animation: actor-idle 1.8s ease-in-out infinite; }
 
 .welcome-card { position: absolute; left: clamp(18px, 4vw, 60px); bottom: clamp(24px, 6vh, 70px); z-index: 8; width: min(420px, calc(100vw - 36px)); padding: 24px; border: 2px solid rgba(255,255,255,.92); border-radius: 28px; background: var(--paper); box-shadow: var(--shadow); backdrop-filter: blur(18px); transition: opacity .35s ease, transform .35s ease; }
 .welcome-card.is-hidden { opacity: 0; transform: translateY(22px) scale(.96); pointer-events: none; }
@@ -156,17 +137,12 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 4px solid 
 @keyframes hotspot-bob { 0%,100% { margin-top: 0; } 50% { margin-top: -7px; } }
 @keyframes cloud-drift { from { translate: -20vw 0; } to { translate: 130vw 0; } }
 @keyframes actor-hop { 0%,100% { translate: 0 0; rotate: -1deg; } 50% { translate: 0 -3px; rotate: 1deg; } }
-@keyframes actor-leg-left { 0%,100% { rotate: 18deg; } 50% { rotate: -18deg; } }
-@keyframes actor-leg-right { 0%,100% { rotate: -18deg; } 50% { rotate: 18deg; } }
-@keyframes actor-arm-left { 0%,100% { rotate: -18deg; } 50% { rotate: 20deg; } }
-@keyframes actor-arm-right { 0%,100% { rotate: 18deg; } 50% { rotate: -20deg; } }
-@keyframes actor-wave { 0%,100% { rotate: -8deg; } 50% { rotate: -48deg; } }
+@keyframes actor-idle { 0%,100% { translate: 0 0; } 50% { translate: 0 -2px; } }
 .motion-paused *, .motion-paused *::before, .motion-paused *::after { animation-play-state: paused !important; }
 
 @media (max-width: 900px) {
   body { overflow: auto; background: #bfeaf4; }
   .campus { min-height: 780px; }
-  .campus-art { object-position: 52% center; }
   .topbar { inset: 10px 10px auto; }
   .brand { padding-right: 12px; }
   .brand-copy small, .action-text { display: none; }
@@ -180,14 +156,13 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 4px solid 
   .hotspot-library { left: 81%; top: 28%; }
   .hotspot-plaza { left: 51%; top: 52%; }
   .hotspot-auditorium { left: 80%; top: 62%; }
-  .campus-actor { scale: .7; }
+  .campus-actor { width: 66px; }
   .welcome-card { bottom: 22px; }
   .campus-status, .scene-hint { display: none; }
 }
 
 @media (max-width: 620px) {
   .campus { min-height: 820px; }
-  .campus-art { width: 1240px; max-width: none; left: 50%; transform: translateX(-50%); object-fit: cover; }
   .brand { gap: 9px; padding: 9px 12px; }
   .rotary-logo { width: 106px; }
   .brand-divider { height: 34px; }
@@ -195,7 +170,7 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 4px solid 
   .hotspot-principal { left: 14%; top: 27%; }
   .hotspot-library { left: 86%; top: 28%; }
   .hotspot-auditorium { left: 86%; top: 61%; }
-  .campus-actor { scale: .62; }
+  .campus-actor { width: 60px; }
   .welcome-card { padding: 20px; border-radius: 24px; }
   .welcome-card h1 { max-width: 280px; }
   .drawer { inset: auto 8px 8px; width: calc(100vw - 16px); max-height: 82vh; border-radius: 28px; transform: translateY(calc(100% + 30px)); }
