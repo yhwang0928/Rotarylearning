@@ -1,4 +1,10 @@
-import { AVATARS, ZONES, REWARD, ISLAND_BONUS, STORAGE_KEY } from "./data.js";
+import {
+  AVATARS,
+  ZONES,
+  REWARD,
+  ISLAND_BONUS,
+  STORAGE_KEY,
+} from "./data.js?v=20261105-readable";
 import {
   cleanName,
   createPlayer,
@@ -6,7 +12,7 @@ import {
   savePlayer,
   summary,
   answerQuestion,
-} from "./state.js";
+} from "./state.js?v=20261105-readable";
 
 const $ = (selector) => document.querySelector(selector);
 const escape = (value) =>
@@ -18,6 +24,15 @@ const escape = (value) =>
       ],
   );
 let storage;
+function questionMarkup(text) {
+  return text
+    .split("，")
+    .map(
+      (part, index, parts) =>
+        `<span class="question-phrase">${escape(part)}${index < parts.length - 1 ? "，" : ""}</span>`,
+    )
+    .join("");
+}
 try {
   storage = window.localStorage;
 } catch {
@@ -32,6 +47,38 @@ let player = loadPlayer(storage),
   selectedAvatar = player?.avatar ?? AVATARS[0].id,
   island = null,
   studio = null;
+const TYPE_SIZE_KEY = "rotarylearning.poc.type-size.v1";
+function applyTypeSize(value) {
+  const large = value === "large";
+  document.documentElement.dataset.typeSize = large ? "large" : "standard";
+  document.querySelectorAll("[data-type-size-toggle]").forEach((button) => {
+    button.textContent = large ? "特大字：開" : "特大字：關";
+    button.setAttribute("aria-pressed", String(large));
+    button.setAttribute(
+      "aria-label",
+      large ? "切換為一般大字" : "切換為特大字",
+    );
+  });
+}
+try {
+  applyTypeSize(storage.getItem(TYPE_SIZE_KEY));
+} catch {
+  applyTypeSize("standard");
+}
+document.querySelectorAll("[data-type-size-toggle]").forEach((button) => {
+  button.addEventListener("click", () => {
+    const value =
+      document.documentElement.dataset.typeSize === "large"
+        ? "standard"
+        : "large";
+    applyTypeSize(value);
+    try {
+      storage.setItem(TYPE_SIZE_KEY, value);
+    } catch {
+      /* The selected size still works for this visit. */
+    }
+  });
+});
 let currentZone = null,
   chosenAnswer = null,
   editing = false,
@@ -40,14 +87,12 @@ let currentZone = null,
 const syncModalPause = () =>
   island?.setPaused(paused || !!document.querySelector("dialog[open]"));
 const modalObserver = new MutationObserver(syncModalPause);
-document
-  .querySelectorAll("dialog")
-  .forEach((dialog) =>
-    modalObserver.observe(dialog, {
-      attributes: true,
-      attributeFilter: ["open"],
-    }),
-  );
+document.querySelectorAll("dialog").forEach((dialog) =>
+  modalObserver.observe(dialog, {
+    attributes: true,
+    attributeFilter: ["open"],
+  }),
+);
 
 function toast(message) {
   $("#toast").textContent = message;
@@ -71,6 +116,10 @@ function persist() {
   refresh();
 }
 window.addEventListener("storage", (event) => {
+  if (event.key === TYPE_SIZE_KEY) {
+    applyTypeSize(event.newValue);
+    return;
+  }
   if (event.key !== STORAGE_KEY) return;
   const updated = loadPlayer(storage);
   if (!updated || !player || updated.createdAt !== player.createdAt) return;
@@ -96,7 +145,7 @@ function portrait(avatar, extra = "") {
 function renderAvatars() {
   $("#avatar-grid").innerHTML = AVATARS.map(
     (avatar) =>
-      `<button class="avatar-option" type="button" role="radio" aria-checked="${avatar.id === selectedAvatar}" data-avatar="${avatar.id}" aria-label="${avatar.name}，${avatar.style}">${portrait(avatar.id)}<strong>${avatar.name}</strong></button>`,
+      `<button class="avatar-option" type="button" role="radio" aria-checked="${avatar.id === selectedAvatar}" data-avatar="${avatar.id}" aria-label="${avatar.name}，${avatar.style}">${portrait(avatar.id)}<strong>${avatar.name}</strong><span class="avatar-selection">${avatar.id === selectedAvatar ? "✓ 已選擇" : "點選人物"}</span></button>`,
   ).join("");
   studio?.select(AVATARS.find((item) => item.id === selectedAvatar));
 }
@@ -105,9 +154,7 @@ function showOnboarding(edit = false) {
   selectedAvatar = player?.avatar ?? AVATARS[0].id;
   $("#nickname").value = player?.name ?? "";
   $("#onboard-error").textContent = "";
-  $("#onboard-title").textContent = edit
-    ? "換個樣子，繼續探索。"
-    : "哪一位是今天的你？";
+  $("#onboard-title").textContent = edit ? "更換人物與暱稱" : "選擇你的人物";
   $("#start-button").innerHTML = edit
     ? '儲存人物 <span aria-hidden="true">→</span>'
     : '開始我的探索 <span aria-hidden="true">→</span>';
@@ -188,7 +235,7 @@ function destination(id) {
   $("#lesson-dialog").close();
   currentZone = zone;
   $("#journey-bar").hidden = false;
-  $("#journey-text").textContent = `${player.name}正在前往${zone.name}`;
+  $("#journey-text").textContent = `正在前往${zone.name}`;
   $("#enter-now").innerHTML = '直接進入 <span aria-hidden="true">→</span>';
   if (island) {
     island.goTo(id);
@@ -212,13 +259,13 @@ function renderLesson() {
   const z = currentZone;
   if (!z) return;
   $("#lesson-content").innerHTML =
-    `<p class="lesson-eyebrow"><span aria-hidden="true">${z.symbol}</span> ${z.name} · 約 2 分鐘</p><h2 id="lesson-title" class="lesson-title">${z.title}</h2><p class="lesson-intro">${z.intro}</p><ol class="lesson-points">${z.points.map((p) => `<li>${p}</li>`).join("")}</ol><a class="source-link" href="${z.source[1]}" target="_blank" rel="noopener noreferrer">原始資料：${z.source[0]} ↗</a><button class="primary-button" type="button" data-start-quiz>準備好了，開始小挑戰 <span aria-hidden="true">→</span></button><div class="lesson-footer"><span>答對一題，完成本區體驗課</span><span>${player.completed[z.id] ? "已領過點數" : `首次通過 +${REWARD} 點`}</span></div>`;
+    `<p class="lesson-eyebrow"><span aria-hidden="true">${z.symbol}</span> ${z.name} · 約 2 分鐘</p><h2 id="lesson-title" class="lesson-title">${z.title}</h2><p class="lesson-intro">${z.intro}</p><ol class="lesson-points">${z.points.map((p) => `<li>${p}</li>`).join("")}</ol><a class="source-link" href="${z.source[1]}" target="_blank" rel="noopener noreferrer">查看原始資料：${z.source[0]} ↗</a><button class="primary-button" type="button" data-start-quiz>開始答題 <span aria-hidden="true">→</span></button><div class="lesson-footer"><span>答對一題，即可完成這一區</span><span>${player.completed[z.id] ? "已領過點數，可再次複習" : `首次通過可獲得 ${REWARD} 點`}</span></div>`;
 }
 function renderQuiz() {
   chosenAnswer = null;
   const z = currentZone;
   $("#lesson-content").innerHTML =
-    `<p class="lesson-eyebrow">知識小挑戰 · ${z.name}</p><h2 id="lesson-title">把剛學到的，想一想。</h2><p class="quiz-prompt">${z.question}</p><div class="answer-options" role="group" aria-label="答案選項">${z.options.map((option, index) => `<button class="answer-option" type="button" aria-pressed="false" data-answer="${index}"><span class="answer-letter" aria-hidden="true">${String.fromCharCode(65 + index)}</span>${option}</button>`).join("")}</div><div id="quiz-feedback" aria-live="polite"></div><button class="primary-button" type="button" data-submit-answer disabled>選好後，確認答案 <span aria-hidden="true">→</span></button><button class="quiet-button" type="button" data-read-again>回看課程內容</button>`;
+    `<p class="lesson-eyebrow">${z.name} · 小測驗</p><h2 id="lesson-title">知識小挑戰</h2><p class="quiz-prompt">${questionMarkup(z.question)}</p><div class="answer-options" role="group" aria-label="答案選項">${z.options.map((option, index) => `<button class="answer-option" type="button" aria-pressed="false" data-answer="${index}"><span class="answer-letter" aria-hidden="true">${String.fromCharCode(65 + index)}</span>${option}</button>`).join("")}</div><div id="quiz-feedback" aria-live="polite"></div><button class="primary-button" type="button" data-submit-answer disabled>選好後，確認答案 <span aria-hidden="true">→</span></button><button class="quiet-button" type="button" data-read-again>回看課程內容</button>`;
   $("#lesson-dialog").scrollTop = 0;
   $("#lesson-title").setAttribute("tabindex", "-1");
   $("#lesson-title").focus();
@@ -236,7 +283,7 @@ function submitAnswer() {
   persist();
   const info = summary(player);
   $("#lesson-content").innerHTML =
-    `<div class="result-wrap"><p class="eyebrow">A LITTLE KNOWLEDGE, A NEW STEP</p><div class="reward-art"><span aria-hidden="true">✦</span>${result.awarded ? `+${result.awarded}` : "✓"}</div><h2 id="lesson-title">${result.awarded ? "學會了，也前進了！" : "複習完成！"}</h2><p>${escape(currentZone.explanation)}</p><span class="result-badge">${result.awarded ? `已記入你的學習護照 · 共 ${info.score} 點` : "這一課已領過點數，複習不重複加點。"}</span>${info.count === ZONES.length ? '<div class="quiz-feedback"><strong>獲得「全島探索家」徽章</strong>五個學區都完成了！首次全島完成額外獲得 20 點。</div>' : ""}<button class="primary-button" type="button" data-continue>回到校園，繼續探索 <span aria-hidden="true">→</span></button><button class="quiet-button" type="button" data-passport>查看我的學習護照</button></div>`;
+    `<div class="result-wrap"><p class="eyebrow">完成這一區的小挑戰</p><div class="reward-art"><span aria-hidden="true">✦</span>${result.awarded ? `+${result.awarded}` : "✓"}</div><h2 id="lesson-title">${result.awarded ? "答對了，挑戰完成！" : "複習完成！"}</h2><p>${escape(currentZone.explanation)}</p><span class="result-badge">${result.awarded ? `點數已存入學習護照，目前共 ${info.score} 點。` : "這一課已領過點數，複習不重複加點。"}</span>${info.count === ZONES.length ? '<div class="quiz-feedback"><strong>獲得「全島探索家」徽章</strong>五個學區都完成了！全島完成獎勵 20 點，已計入累積點數。</div>' : ""}<button class="primary-button" type="button" data-continue>回到校園，繼續探索 <span aria-hidden="true">→</span></button><button class="quiet-button" type="button" data-passport>查看我的學習護照</button></div>`;
   $("#lesson-dialog").scrollTop = 0;
 }
 $("#lesson-content").addEventListener("click", (event) => {
@@ -268,7 +315,7 @@ function renderPassport() {
   if (!player) return;
   const info = summary(player);
   $("#passport-content").innerHTML =
-    `<div class="passport-head">${portrait(player.avatar)}<div><p>MY LEARNING PASSPORT</p><h2 id="passport-title">${escape(player.name)}的學習護照</h2><p>${info.badge} · 本機存檔</p></div></div><div class="passport-stats"><div><strong>${info.score}<small> 點</small></strong><span>探索積分</span></div><div><strong>${info.count}<small> / ${info.total}</small></strong><span>學區完成</span></div></div><div class="passport-progress" role="progressbar" aria-label="學區完成進度" aria-valuenow="${info.count}" aria-valuemin="0" aria-valuemax="${info.total}"><span style="width:${(info.count / info.total) * 100}%"></span></div><p class="passport-section-title">你的學區印章</p><div class="stamp-list">${ZONES.map((z) => `<div class="stamp ${player.completed[z.id] ? "earned" : ""}"><span aria-label="${player.completed[z.id] ? "已完成" : "未完成"}">${z.symbol}</span>${z.name}${player.completed[z.id] ? "<small>✓ 已完成</small>" : ""}</div>`).join("")}</div><div class="passport-note"><strong>${info.count === info.total ? "全島探索家 · 已獲得" : `再完成 ${info.total - info.count} 區，成為全島探索家`}</strong>每區首次答對 +${REWARD} 點，全島首次完成再 +${ISLAND_BONUS} 點。複習不重複加點。<br>POC 紀錄只保存在這個瀏覽器，並非正式社員認證或學分。</div><div class="passport-actions"><button class="secondary-button" type="button" id="edit-player">更換人物與暱稱</button><button class="secondary-button" type="button" id="download-save">匯出測試紀錄</button></div>`;
+    `<div class="passport-head">${portrait(player.avatar)}<div><h2 id="passport-title">我的學習護照</h2><p class="passport-owner">${escape(player.name)}</p><p>${info.badge} · 本機存檔</p></div></div><div class="passport-stats"><div><strong>${info.score}<small> 點</small></strong><span>累積點數</span></div><div><strong>${info.count}<small> / ${info.total} 區</small></strong><span>完成學區</span></div></div><div class="passport-progress" role="progressbar" aria-label="學區完成進度" aria-valuenow="${info.count}" aria-valuemin="0" aria-valuemax="${info.total}"><span style="width:${(info.count / info.total) * 100}%"></span></div><p class="passport-section-title">你的學區印章</p><div class="stamp-list">${ZONES.map((z) => `<div class="stamp ${player.completed[z.id] ? "earned" : ""}"><span aria-hidden="true">${z.symbol}</span>${z.name}<small>${player.completed[z.id] ? "✓ 已完成" : "尚未完成"}</small></div>`).join("")}</div><div class="passport-note"><strong>${info.count === info.total ? "已獲得「全島探索家」徽章" : `再完成 ${info.total - info.count} 區，就能成為全島探索家`}</strong>每區首次答對獲得 ${REWARD} 點；全島首次完成，再獲得 ${ISLAND_BONUS} 點。重複答題不會再加點。<br>試玩紀錄只保存在這個瀏覽器，不代表正式社員認證或學分。</div><div class="passport-actions"><button class="secondary-button" type="button" id="edit-player">更換人物與暱稱</button><button class="secondary-button" type="button" id="download-save">匯出測試紀錄</button></div>`;
 }
 function showPassport() {
   if (!player) {
@@ -358,7 +405,7 @@ updateMapHint();
 async function boot() {
   if (!player) showOnboarding();
   try {
-    const module = await import("./scene.js");
+    const module = await import("./scene.js?v=20261105-readable");
     try {
       studio = module.createAvatarStudio($("#avatar-preview"));
       renderAvatars();
@@ -386,7 +433,7 @@ async function boot() {
     $("#scene-fallback").hidden = false;
     $("#scene").hidden = true;
     $("#player-label").hidden = true;
-    toast("3D 暫時無法開啟，仍可從學區選單完成挑戰。");
+    toast("3D 暫時無法開啟，仍可按「選擇學區」完成挑戰。");
   } finally {
     $("#scene-loading").hidden = true;
     refresh();

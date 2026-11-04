@@ -1,4 +1,10 @@
-import { AVATARS, ZONES, REWARD, ISLAND_BONUS, STORAGE_KEY } from "./data.js";
+import {
+  AVATARS,
+  ZONES,
+  REWARD,
+  ISLAND_BONUS,
+  STORAGE_KEY,
+} from "./data.js?v=20261105-readable";
 
 export function cleanName(value) {
   return Array.from(

@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { OrbitControls } from "./vendor/OrbitControls.js";
-import { AVATARS, ZONES } from "./data.js";
+import { AVATARS, ZONES } from "./data.js?v=20261105-readable";
 import { NODES, EDGES, findRoute } from "./routes.js";
 
 const C = {
@@ -230,7 +230,7 @@ export function createAvatarStudio(container) {
     alpha: true,
     preserveDrawingBuffer: true,
   });
-  renderer.setSize(200, 250, false);
+  renderer.setSize(320, 400, false);
   renderer.setPixelRatio(1);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   const scene = new THREE.Scene();

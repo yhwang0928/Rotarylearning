@@ -85,7 +85,7 @@ export const ZONES = [
       "扶輪基金會協助資助人道服務活動。",
     ],
     source: ["RI：Who We Are", "https://www.rotary.org/who-we-are"],
-    question: "扶輪社最貼近下列哪一種描述？",
+    question: "扶輪社主要是做什麼的？",
     options: [
       "只負責舉辦聚餐的組織",
       "連結社員、交流並採取服務行動的地方",
@@ -111,7 +111,7 @@ export const ZONES = [
       "遇到制度與資料疑問，回到官方文件查證，並留意版本。",
     ],
     source: ["RI：Who We Are", "https://www.rotary.org/who-we-are"],
-    question: "學完一個扶輪主題後，哪個做法最能接到實際參與？",
+    question: "學完課程後，如何實際參與？",
     options: [
       "和社友討論，選一項可參與的行動",
       "只記住課程標題",
@@ -137,7 +137,7 @@ export const ZONES = [
       "中文摘要幫助理解；需要釐清原意時，回查官方原文。",
     ],
     source: ["Rotary International 官方網站", "https://www.rotary.org/"],
-    question: "看到兩份扶輪資料說法不同，應該先做什麼？",
+    question: "資料說法不同時，應先做什麼？",
     options: [
       "選排版比較好看的那份",
       "以轉傳次數決定哪份正確",
@@ -164,7 +164,7 @@ export const ZONES = [
       "關心後續成果與維護，讓服務影響持續發生。",
     ],
     source: ["RI：Our Work", "https://www.rotary.org/our-work"],
-    question: "規劃社區服務時，最適合的起點是什麼？",
+    question: "規劃服務時，應該從哪裡開始？",
     options: [
       "先選一批想捐贈的物品",
       "傾聽社區，了解需求與既有資源",
@@ -190,7 +190,7 @@ export const ZONES = [
       "邀請新社員一起參與，並提供清楚的下一步。",
     ],
     source: ["RI：Who We Are", "https://www.rotary.org/who-we-are"],
-    question: "參加交流或訓練後，哪個做法較有助於社內共同學習？",
+    question: "參加訓練後，如何幫助社內學習？",
     options: [
       "只收藏簡報，之後不再討論",
       "只記錄參與人數",

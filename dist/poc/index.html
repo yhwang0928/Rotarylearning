@@ -12,7 +12,7 @@
       content="選一位人物，在扶輪知識島走走。完成五個學區的小挑戰，收集知識與點數。免登入 POC。"
     />
     <title>扶輪知識島｜遊戲島 POC</title>
-    <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="./styles.css?v=20261105-readable" />
     <script type="importmap">
       { "imports": { "three": "./vendor/three.module.js" } }
     </script>
@@ -36,7 +36,16 @@
         <span class="brand-rule"></span
         ><span>扶輪知識島<small>一點知識，一起探索。</small></span>
       </a>
-      <span class="poc-tag">POC 試玩</span>
+      <span class="poc-tag">試玩版</span>
+      <button
+        class="type-size-button"
+        type="button"
+        data-type-size-toggle
+        aria-pressed="false"
+        aria-label="切換為特大字"
+      >
+        特大字
+      </button>
       <button
         class="passport-button"
         id="passport-button"
@@ -56,9 +65,9 @@
       ></canvas>
       <div id="labels" class="scene-labels"></div>
       <div class="scene-title">
-        <p class="eyebrow">ROTARY LEARNING ISLAND</p>
-        <h1>今天，也學會一點新知識。</h1>
-        <p>點一棟建築，讓人物帶你去。</p>
+        <p class="eyebrow">扶輪知識島・探索校園</p>
+        <h1>選一個學區，開始學習。</h1>
+        <p>點建築，或按下「選擇學區」。</p>
       </div>
       <div class="player-label" id="player-label" hidden>
         <span class="player-dot"></span><span id="player-name"></span>
@@ -87,7 +96,7 @@
         type="button"
         aria-haspopup="dialog"
       >
-        <span aria-hidden="true">▦</span> 想去哪裡？
+        <span aria-hidden="true">▦</span> 選擇學區
         <span aria-hidden="true">⌃</span>
       </button>
       <div class="storage-note" id="storage-note">本機存檔 · 不需登入</div>
@@ -97,13 +106,13 @@
       </div>
       <div class="scene-fallback" id="scene-fallback" hidden>
         <img src="../assets/rotarylearning-campus.png" alt="扶輪知識校園" />
-        <p>這個瀏覽器暫時無法顯示 3D，仍可用「想去哪裡？」完成課程。</p>
+        <p>這個瀏覽器暫時無法顯示 3D，仍可用「選擇學區」完成課程。</p>
       </div>
     </main>
 
     <dialog id="onboarding" class="onboarding" aria-labelledby="onboard-title">
       <div class="onboard-art">
-        <p class="eyebrow">YOUR ISLAND, YOUR STORY</p>
+        <p class="eyebrow">選人物・學知識・收集點數</p>
         <h2>帶著好奇心，<br />一起出發。</h2>
         <div
           id="avatar-preview"
@@ -116,17 +125,30 @@
         </div>
       </div>
       <form id="player-form" class="onboard-form">
-        <span class="step-label">歡迎來到扶輪知識島 <span>POC</span></span>
-        <h2 id="onboard-title">哪一位是今天的你？</h2>
-        <p class="muted">選個喜歡的樣子，再取一個名字。</p>
+        <div class="onboard-toolbar">
+          <span class="step-label">扶輪知識島・試玩版</span
+          ><button
+            class="type-size-button"
+            type="button"
+            data-type-size-toggle
+            aria-pressed="false"
+            aria-label="切換為特大字"
+          >
+            特大字
+          </button>
+        </div>
+        <h2 id="onboard-title">選擇你的人物</h2>
+        <p class="muted">點選一位人物，再往下輸入暱稱。</p>
+        <p class="form-section-label" id="avatar-step">1. 選擇人物</p>
         <div
           class="avatar-grid"
           id="avatar-grid"
           role="radiogroup"
           aria-label="選擇人物"
+          aria-describedby="avatar-step"
         ></div>
         <label class="name-label" for="nickname"
-          >你想讓大家怎麼稱呼你？<small>最多 12 個字，可之後修改</small></label
+          >2. 輸入你的暱稱<small>最多 12 個字，之後可以修改</small></label
         >
         <input
           id="nickname"
@@ -141,7 +163,7 @@
           開始我的探索 <span aria-hidden="true">→</span>
         </button>
         <p class="local-note">
-          試玩版不需登入，人物與點數儲存在這個瀏覽器。<br />清除瀏覽資料或更換裝置，無法恢復紀錄。
+          不需登入，紀錄只存在目前的瀏覽器。<br />清除瀏覽資料或更換裝置，紀錄不會保留。
         </p>
         <button class="quiet-button" id="cancel-edit" type="button" hidden>
           保留原來的人物
@@ -154,17 +176,27 @@
       class="small-dialog"
       aria-labelledby="places-title"
     >
-      <button
-        class="close-button"
-        type="button"
-        data-close="places-dialog"
-        aria-label="關閉學區選單"
-      >
-        ×
-      </button>
-      <p class="eyebrow">EXPLORE THE ISLAND</p>
-      <h2 id="places-title">想去哪裡？</h2>
-      <p class="muted">每個學區，都有一點新發現。</p>
+      <div class="dialog-toolbar">
+        <button
+          class="type-size-button"
+          type="button"
+          data-type-size-toggle
+          aria-pressed="false"
+          aria-label="切換為特大字"
+        >
+          特大字</button
+        ><button
+          class="close-button"
+          type="button"
+          data-close="places-dialog"
+          aria-label="關閉學區選單"
+        >
+          <span aria-hidden="true">×</span> 關閉
+        </button>
+      </div>
+      <p class="eyebrow">校園五大學區</p>
+      <h2 id="places-title">選擇學區</h2>
+      <p class="muted">每區首次通過小挑戰，可獲得 10 點。</p>
       <div id="places-list" class="places-list"></div>
     </dialog>
 
@@ -173,14 +205,24 @@
       class="lesson-dialog"
       aria-labelledby="lesson-title"
     >
-      <button
-        class="close-button"
-        type="button"
-        data-close="lesson-dialog"
-        aria-label="回到校園"
-      >
-        ×
-      </button>
+      <div class="dialog-toolbar">
+        <button
+          class="type-size-button"
+          type="button"
+          data-type-size-toggle
+          aria-pressed="false"
+          aria-label="切換為特大字"
+        >
+          特大字</button
+        ><button
+          class="close-button"
+          type="button"
+          data-close="lesson-dialog"
+          aria-label="回到校園"
+        >
+          <span aria-hidden="true">×</span> 回到校園
+        </button>
+      </div>
       <div id="lesson-content"></div>
     </dialog>
 
@@ -189,17 +231,27 @@
       class="passport-dialog"
       aria-labelledby="passport-title"
     >
-      <button
-        class="close-button"
-        type="button"
-        data-close="passport-dialog"
-        aria-label="關閉學習護照"
-      >
-        ×
-      </button>
+      <div class="dialog-toolbar">
+        <button
+          class="type-size-button"
+          type="button"
+          data-type-size-toggle
+          aria-pressed="false"
+          aria-label="切換為特大字"
+        >
+          特大字</button
+        ><button
+          class="close-button"
+          type="button"
+          data-close="passport-dialog"
+          aria-label="關閉學習護照"
+        >
+          <span aria-hidden="true">×</span> 關閉
+        </button>
+      </div>
       <div id="passport-content"></div>
     </dialog>
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
-    <script type="module" src="./app.js"></script>
+    <script type="module" src="./app.js?v=20261105-readable"></script>
   </body>
 </html>
