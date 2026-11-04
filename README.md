@@ -29,3 +29,5 @@ npx wrangler pages deploy dist --project-name rotarylearning
 ## 協作開發
 
 多人開發前，請先閱讀 [協作開發工作包](./docs/WORK_PACKAGES.md)。文件定義模組邊界、檔案所有權、依賴順序、驗收條件與 Pull Request 規則。
+
+換電腦或交接開發時，請先閱讀 [HANDOFF.md](./HANDOFF.md)；「Puma 政策島式動態設計」的確認方向、桌機與手機情境圖收錄於 [動態設計規格](./docs/DYNAMIC_DESIGN_DIRECTION.md)。
