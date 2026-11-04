@@ -14,6 +14,17 @@ python3 -m http.server 4173 --directory dist
 
 開啟 `http://localhost:4173`。
 
+## 遊戲島 POC（免登入）
+
+開啟 `http://localhost:4173/poc/` 可測試六種人物選擇、3D 校園道路移動、五區短課程、答題點數與本機學習護照。詳細範圍及限制見 [POC 試玩說明](./docs/POC_GAME_ISLAND.md)。
+
+```bash
+npm ci
+npm test
+```
+
+人物與點數只保存在同一瀏覽器；本版尚未加入 LINE、雲端同步或正式後端判分。
+
 ## Cloudflare Pages
 
 專案名稱：`rotarylearning`

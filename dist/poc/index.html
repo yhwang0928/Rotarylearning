@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#f8f5eb" />
+    <meta
+      name="description"
+      content="選一位人物，在扶輪知識島走走。完成五個學區的小挑戰，收集知識與點數。免登入 POC。"
+    />
+    <title>扶輪知識島｜遊戲島 POC</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <script type="importmap">
+      { "imports": { "three": "./vendor/three.module.js" } }
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#places-button">跳到學區選單</a>
+    <header class="topbar">
+      <a class="brand" href="../" aria-label="返回扶輪知識小學堂">
+        <svg
+          class="rotary-logo"
+          viewBox="1007 383 764 284"
+          role="img"
+          aria-label="Rotary District 3481"
+        >
+          <image
+            href="../assets/rotary-logo-simple.png"
+            width="1875"
+            height="1020"
+          />
+        </svg>
+        <span class="brand-rule"></span
+        ><span>扶輪知識島<small>一點知識，一起探索。</small></span>
+      </a>
+      <span class="poc-tag">POC 試玩</span>
+      <button
+        class="passport-button"
+        id="passport-button"
+        type="button"
+        aria-label="開啟我的學習護照"
+      >
+        <span class="coin">✦</span><strong id="score">0</strong
+        ><span class="passport-label">我的護照</span
+        ><span aria-hidden="true">↗</span>
+      </button>
+    </header>
+
+    <main id="island" aria-label="扶輪知識島遊戲場景">
+      <canvas
+        id="scene"
+        aria-label="可拖曳、旋轉與縮放的 3D 校園。可使用學區選單前往各場域。"
+      ></canvas>
+      <div id="labels" class="scene-labels"></div>
+      <div class="scene-title">
+        <p class="eyebrow">ROTARY LEARNING ISLAND</p>
+        <h1>今天，也學會一點新知識。</h1>
+        <p>點一棟建築，讓人物帶你去。</p>
+      </div>
+      <div class="player-label" id="player-label" hidden>
+        <span class="player-dot"></span><span id="player-name"></span>
+      </div>
+      <div class="scene-controls" aria-label="地圖操作">
+        <button id="overview-button" type="button" aria-label="查看校園全景">
+          <span aria-hidden="true">⌂</span><span>全景</span>
+        </button>
+        <button id="follow-button" type="button" aria-pressed="false">
+          <span aria-hidden="true">◎</span><span>跟隨</span>
+        </button>
+        <button id="pause-button" type="button" aria-pressed="false">
+          <span aria-hidden="true">Ⅱ</span><span>暫停</span>
+        </button>
+      </div>
+      <p class="map-hint" id="map-hint">拖曳旋轉 · 雙指縮放</p>
+      <div class="journey-bar" id="journey-bar" hidden aria-live="polite">
+        <span class="journey-dot"></span><span id="journey-text"></span
+        ><button id="enter-now" type="button">
+          直接進入 <span aria-hidden="true">→</span>
+        </button>
+      </div>
+      <button
+        class="places-button"
+        id="places-button"
+        type="button"
+        aria-haspopup="dialog"
+      >
+        <span aria-hidden="true">▦</span> 想去哪裡？
+        <span aria-hidden="true">⌃</span>
+      </button>
+      <div class="storage-note" id="storage-note">本機存檔 · 不需登入</div>
+      <div class="scene-loading" id="scene-loading" role="status">
+        <span class="loading-orbit"></span><strong>正在打開你的知識島</strong
+        ><span>準備校園與人物中…</span>
+      </div>
+      <div class="scene-fallback" id="scene-fallback" hidden>
+        <img src="../assets/rotarylearning-campus.png" alt="扶輪知識校園" />
+        <p>這個瀏覽器暫時無法顯示 3D，仍可用「想去哪裡？」完成課程。</p>
+      </div>
+    </main>
+
+    <dialog id="onboarding" class="onboarding" aria-labelledby="onboard-title">
+      <div class="onboard-art">
+        <p class="eyebrow">YOUR ISLAND, YOUR STORY</p>
+        <h2>帶著好奇心，<br />一起出發。</h2>
+        <div
+          id="avatar-preview"
+          class="avatar-preview"
+          aria-hidden="true"
+        ></div>
+        <span class="avatar-platform"></span>
+        <div class="art-caption">
+          <span class="tiny-star">✦</span> 在知識島，找到你的下一個行動。
+        </div>
+      </div>
+      <form id="player-form" class="onboard-form">
+        <span class="step-label">歡迎來到扶輪知識島 <span>POC</span></span>
+        <h2 id="onboard-title">哪一位是今天的你？</h2>
+        <p class="muted">選個喜歡的樣子，再取一個名字。</p>
+        <div
+          class="avatar-grid"
+          id="avatar-grid"
+          role="radiogroup"
+          aria-label="選擇人物"
+        ></div>
+        <label class="name-label" for="nickname"
+          >你想讓大家怎麼稱呼你？<small>最多 12 個字，可之後修改</small></label
+        >
+        <input
+          id="nickname"
+          name="nickname"
+          maxlength="24"
+          placeholder="輸入你的暱稱"
+          autocomplete="nickname"
+          required
+        />
+        <p id="onboard-error" class="form-error" role="alert"></p>
+        <button class="primary-button" id="start-button" type="submit">
+          開始我的探索 <span aria-hidden="true">→</span>
+        </button>
+        <p class="local-note">
+          試玩版不需登入，人物與點數儲存在這個瀏覽器。<br />清除瀏覽資料或更換裝置，無法恢復紀錄。
+        </p>
+        <button class="quiet-button" id="cancel-edit" type="button" hidden>
+          保留原來的人物
+        </button>
+      </form>
+    </dialog>
+
+    <dialog
+      id="places-dialog"
+      class="small-dialog"
+      aria-labelledby="places-title"
+    >
+      <button
+        class="close-button"
+        type="button"
+        data-close="places-dialog"
+        aria-label="關閉學區選單"
+      >
+        ×
+      </button>
+      <p class="eyebrow">EXPLORE THE ISLAND</p>
+      <h2 id="places-title">想去哪裡？</h2>
+      <p class="muted">每個學區，都有一點新發現。</p>
+      <div id="places-list" class="places-list"></div>
+    </dialog>
+
+    <dialog
+      id="lesson-dialog"
+      class="lesson-dialog"
+      aria-labelledby="lesson-title"
+    >
+      <button
+        class="close-button"
+        type="button"
+        data-close="lesson-dialog"
+        aria-label="回到校園"
+      >
+        ×
+      </button>
+      <div id="lesson-content"></div>
+    </dialog>
+
+    <dialog
+      id="passport-dialog"
+      class="passport-dialog"
+      aria-labelledby="passport-title"
+    >
+      <button
+        class="close-button"
+        type="button"
+        data-close="passport-dialog"
+        aria-label="關閉學習護照"
+      >
+        ×
+      </button>
+      <div id="passport-content"></div>
+    </dialog>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
