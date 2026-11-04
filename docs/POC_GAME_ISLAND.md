@@ -3,6 +3,11 @@
 版本：2026-11-04  
 範圍：個人探索、免登入、本機存檔。
 
+試玩網址：<https://poc-game-island.rotarylearning.pages.dev/poc/>  
+原始碼分支：[codex/game-island-poc](https://github.com/yhwang0928/Rotarylearning/tree/codex/game-island-poc)
+
+預覽部署為獨立分支，並未取代 `rotarylearning.pages.dev` 正式首頁。
+
 ## 試玩流程
 
 1. 開啟 `/poc/`，選擇六種人物外觀之一，輸入暱稱。
@@ -69,6 +74,10 @@ npm run preview
 自動測試：六項通過，涵蓋存檔恢復、暱稱／Unicode、答錯不發點、重複完成、全島獎勵、損壞存檔與所有道路節點間的可達性。
 
 瀏覽器：ChatGPT in-app Chromium；桌機 1280×720 與手機窄視窗 390×844。已實際操作建立人物、前往圖書室、閱讀、答錯再答對、重考、改人物及暱稱、重整恢復，以及五區全部完成後的 70 點與五個印章。
+
+公開預覽已驗證首次進入選角與 3D 資源載入，未觀察到 console error；390px 窄視窗未出現水平溢出。
+
+驗證截圖：[桌機校園](./poc-qa/desktop-island.jpg)、[手機學習護照](./poc-qa/mobile-passport.jpg)、[遠端首次選角](./poc-qa/live-onboarding.jpg)、[遠端手機選角](./poc-qa/live-mobile-onboarding.jpg)。
 
 未驗證：iPhone／Android 實機觸控、多瀏覽器長期儲存行為、低階手機效能與正式多人資料競爭。窄視窗測試不能視為實機驗收。
 

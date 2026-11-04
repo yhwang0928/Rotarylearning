@@ -5,6 +5,7 @@
 ## 最新補充：遊戲島免登入 POC（2026-11-04）
 
 - 使用者確認第一版採每位社友各自探索，先不加入 LINE 綁定。
+- POC 預覽：<https://poc-game-island.rotarylearning.pages.dev/poc/>；程式分支：`codex/game-island-poc`。
 - 已新增獨立 `/poc/`：六種人物、3D 校園與走路、五區短課程／測驗、點數、護照與本機存檔。
 - 詳細範圍、執行方式、驗證與限制見 [POC 試玩說明](./docs/POC_GAME_ISLAND.md)。
 - 下方「尚未導入 Three.js」描述針對原本首頁；POC 已使用真正 Three.js 場景，原首頁保留。
