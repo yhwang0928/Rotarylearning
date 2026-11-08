@@ -405,7 +405,7 @@ updateMapHint();
 async function boot() {
   if (!player) showOnboarding();
   try {
-    const module = await import("./scene.js?v=20261108-gobkit");
+    const module = await import("./scene.js?v=20261108-gobkit-walk");
     try {
       studio = module.createAvatarStudio($("#avatar-preview"));
       renderAvatars();

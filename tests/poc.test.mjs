@@ -113,12 +113,17 @@ test("all destinations can be reached using only explicit road edges", () => {
 test("guest character assets are deployable GLB files with their requested clips", () => {
   assert.equal(GUEST_CHARACTERS.length, 3);
   for (const guest of GUEST_CHARACTERS) {
+    assert.ok(guest.speed > 0);
+    assert.ok(guest.pause[0] > 0 && guest.pause[1] > guest.pause[0]);
+    assert.ok(guest.patrol.length >= 2);
+    assert.deepEqual(guest.patrol[0], [guest.position[0], guest.position[2]]);
     const file = readFileSync(
       new URL(`../dist/poc/${guest.model.replace("./", "")}`, import.meta.url),
     );
     assert.equal(file.subarray(0, 4).toString(), "glTF");
     const jsonLength = file.readUInt32LE(12);
     const document = JSON.parse(file.subarray(20, 20 + jsonLength).toString());
-    assert.ok(document.animations.some((clip) => clip.name === guest.clip));
+    for (const requiredClip of ["idle", "walk"])
+      assert.ok(document.animations.some((clip) => clip.name === requiredClip));
   }
 });

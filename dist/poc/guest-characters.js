@@ -6,7 +6,14 @@ export const GUEST_CHARACTERS = [
     position: [-8.15, 0.2, 5.65],
     rotation: 0.55,
     height: 1.35,
-    clip: "idle",
+    speed: 0.62,
+    pause: [1.8, 3.8],
+    patrol: [
+      [-8.15, 5.65],
+      [-7.25, 5.25],
+      [-7.55, 4.55],
+      [-8.45, 4.65],
+    ],
   },
   {
     id: "owl",
@@ -15,7 +22,14 @@ export const GUEST_CHARACTERS = [
     position: [8.2, 0.2, -0.2],
     rotation: -0.65,
     height: 1.1,
-    clip: "idle",
+    speed: 0.38,
+    pause: [2.4, 4.8],
+    patrol: [
+      [8.2, -0.2],
+      [8.85, 0.25],
+      [8.55, 1.25],
+      [7.75, 0.9],
+    ],
   },
   {
     id: "penguin",
@@ -24,6 +38,13 @@ export const GUEST_CHARACTERS = [
     position: [2.4, 0.2, 7.5],
     rotation: -0.3,
     height: 1.2,
-    clip: "idle",
+    speed: 0.46,
+    pause: [1.6, 3.4],
+    patrol: [
+      [2.4, 7.5],
+      [3.35, 7.05],
+      [3.9, 6.15],
+      [2.9, 6.1],
+    ],
   },
 ];

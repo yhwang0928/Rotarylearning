@@ -297,11 +297,24 @@ function loadGuestCharacters(scene) {
       );
       scene.add(object);
 
-      const clip = THREE.AnimationClip.findByName(gltf.animations, guest.clip);
-      if (!clip) return { object, mixer: null };
       const mixer = new THREE.AnimationMixer(object);
-      mixer.clipAction(clip).play();
-      return { object, mixer };
+      const actions = Object.fromEntries(
+        ["idle", "walk"].map((name) => {
+          const clip = THREE.AnimationClip.findByName(gltf.animations, name);
+          return [name, clip ? mixer.clipAction(clip) : null];
+        }),
+      );
+      actions.idle?.play();
+      return {
+        definition: guest,
+        object,
+        mixer,
+        actions,
+        action: actions.idle ?? null,
+        actionName: "idle",
+        pathIndex: 0,
+        wait: guest.pause[0] + Math.random() * (guest.pause[1] - guest.pause[0]),
+      };
     }),
   ).then((results) => {
     const loaded = [];
@@ -315,6 +328,50 @@ function loadGuestCharacters(scene) {
     });
     return loaded;
   });
+}
+
+function setGuestAction(guest, name) {
+  const next = guest.actions[name] ?? guest.actions.idle;
+  if (!next || guest.action === next) return;
+  guest.action?.fadeOut(0.18);
+  next.reset().fadeIn(0.18).play();
+  guest.action = next;
+  guest.actionName = name;
+}
+
+function updateGuestCharacter(guest, dt) {
+  guest.mixer.update(dt);
+  const { patrol, speed, pause } = guest.definition;
+  if (guest.wait > 0) {
+    guest.wait -= dt;
+    setGuestAction(guest, "idle");
+    return;
+  }
+
+  const nextIndex = (guest.pathIndex + 1) % patrol.length;
+  const target = patrol[nextIndex];
+  const dx = target[0] - guest.object.position.x;
+  const dz = target[1] - guest.object.position.z;
+  const distance = Math.hypot(dx, dz);
+  if (distance < 0.025) {
+    guest.object.position.x = target[0];
+    guest.object.position.z = target[1];
+    guest.pathIndex = nextIndex;
+    guest.wait = pause[0] + Math.random() * (pause[1] - pause[0]);
+    setGuestAction(guest, "idle");
+    return;
+  }
+
+  setGuestAction(guest, "walk");
+  const angle = Math.atan2(dx, dz);
+  const difference = Math.atan2(
+    Math.sin(angle - guest.object.rotation.y),
+    Math.cos(angle - guest.object.rotation.y),
+  );
+  guest.object.rotation.y += difference * Math.min(dt * 7, 1);
+  const step = Math.min(distance, dt * speed);
+  guest.object.position.x += (dx / distance) * step;
+  guest.object.position.z += (dz / distance) * step;
 }
 
 function windowFrame(parent, x, y, z, w = 0.55, h = 0.8) {
@@ -1044,7 +1101,7 @@ export function createIsland({
       time += dt;
       walkers.forEach((w) => updateWalker(w, dt, time));
       if (!reduced)
-        guestCharacters.forEach((guest) => guest.mixer?.update(dt));
+        guestCharacters.forEach((guest) => updateGuestCharacter(guest, dt));
       globe.rotation.y = time * 0.04;
     }
     if (follow && player) {
