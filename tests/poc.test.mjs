@@ -1,6 +1,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { AVATARS, ZONES, STORAGE_KEY } from "../dist/poc/data.js";
+import { GUEST_CHARACTERS } from "../dist/poc/guest-characters.js";
 import {
   cleanName,
   createPlayer,
@@ -107,4 +109,16 @@ test("all destinations can be reached using only explicit road edges", () => {
           ),
         );
     }
+});
+test("guest character assets are deployable GLB files with their requested clips", () => {
+  assert.equal(GUEST_CHARACTERS.length, 3);
+  for (const guest of GUEST_CHARACTERS) {
+    const file = readFileSync(
+      new URL(`../dist/poc/${guest.model.replace("./", "")}`, import.meta.url),
+    );
+    assert.equal(file.subarray(0, 4).toString(), "glTF");
+    const jsonLength = file.readUInt32LE(12);
+    const document = JSON.parse(file.subarray(20, 20 + jsonLength).toString());
+    assert.ok(document.animations.some((clip) => clip.name === guest.clip));
+  }
 });

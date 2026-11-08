@@ -1,6 +1,8 @@
 import * as THREE from "three";
 import { OrbitControls } from "./vendor/OrbitControls.js";
+import { GLTFLoader } from "./vendor/loaders/GLTFLoader.js";
 import { AVATARS, ZONES } from "./data.js?v=20261105-readable";
+import { GUEST_CHARACTERS } from "./guest-characters.js";
 import { NODES, EDGES, findRoute } from "./routes.js";
 
 const C = {
@@ -263,6 +265,56 @@ export function createAvatarStudio(container) {
   }
   select(AVATARS[0]);
   return { portraits, select };
+}
+
+function loadGuestCharacters(scene) {
+  const loader = new GLTFLoader();
+  return Promise.allSettled(
+    GUEST_CHARACTERS.map(async (guest) => {
+      const gltf = await loader.loadAsync(guest.model);
+      const object = gltf.scene;
+      object.name = `Gobkit ${guest.name}`;
+      object.traverse((child) => {
+        if (!child.isMesh) return;
+        child.castShadow = true;
+        child.receiveShadow = true;
+      });
+
+      object.updateMatrixWorld(true);
+      const initialBox = new THREE.Box3().setFromObject(object);
+      const initialHeight = initialBox.getSize(new THREE.Vector3()).y;
+      if (!Number.isFinite(initialHeight) || initialHeight <= 0)
+        throw new Error(`${guest.name} has an invalid bounding box`);
+      object.scale.multiplyScalar(guest.height / initialHeight);
+      object.rotation.y = guest.rotation;
+      object.updateMatrixWorld(true);
+
+      const scaledBox = new THREE.Box3().setFromObject(object);
+      object.position.set(
+        guest.position[0],
+        guest.position[1] - scaledBox.min.y,
+        guest.position[2],
+      );
+      scene.add(object);
+
+      const clip = THREE.AnimationClip.findByName(gltf.animations, guest.clip);
+      if (!clip) return { object, mixer: null };
+      const mixer = new THREE.AnimationMixer(object);
+      mixer.clipAction(clip).play();
+      return { object, mixer };
+    }),
+  ).then((results) => {
+    const loaded = [];
+    results.forEach((result, index) => {
+      if (result.status === "fulfilled") loaded.push(result.value);
+      else
+        console.warn(
+          `Guest character unavailable: ${GUEST_CHARACTERS[index].name}`,
+          result.reason,
+        );
+    });
+    return loaded;
+  });
 }
 
 function windowFrame(parent, x, y, z, w = 0.55, h = 0.8) {
@@ -598,6 +650,7 @@ export function createIsland({
     selected = null,
     cameraGoal = null,
     active = true;
+  let guestCharacters = [];
   let reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
   controls.addEventListener("start", () => {
     follow = false;
@@ -652,6 +705,9 @@ export function createIsland({
   makeAuditorium(scene);
   makePark(scene);
   const globe = makeFountain(scene);
+  loadGuestCharacters(scene).then((loaded) => {
+    if (active) guestCharacters = loaded;
+  });
   [
     [-10, -4, 1],
     [-4, -6.5, 1.1],
@@ -987,6 +1043,8 @@ export function createIsland({
     if (!paused && !document.hidden) {
       time += dt;
       walkers.forEach((w) => updateWalker(w, dt, time));
+      if (!reduced)
+        guestCharacters.forEach((guest) => guest.mixer?.update(dt));
       globe.rotation.y = time * 0.04;
     }
     if (follow && player) {

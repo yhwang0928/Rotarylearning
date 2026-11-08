@@ -5,6 +5,8 @@
 
 易讀介面更新：2026-11-05。
 
+Gobkit 校園角色試放：2026-11-08。
+
 試玩網址：<https://poc-game-island.rotarylearning.pages.dev/poc/>  
 原始碼分支：[codex/game-island-poc](https://github.com/yhwang0928/Rotarylearning/tree/codex/game-island-poc)
 
@@ -27,6 +29,7 @@
 - 六種共用動作結構的 3D 人物外觀，以及實際人物預覽和縮圖。
 - 人物肢體走路動畫、平滑轉向、地面陰影、道路節點尋路與重新選擇目的地。
 - 四位環境人物，包含自主散步、閱讀與澆花姿態。
+- 三位 Gobkit CC0 動物角色：服務廣場狐狸、圖書室貓頭鷹與入口企鵝，皆使用本機 GLB 與待機動畫；載入失敗不影響核心操作。
 - 桌機旋轉、右鍵平移、滾輪縮放；觸控拖曳平移、雙指縮放／旋轉。
 - 五區各一份 POC 短課程與一道測驗，附官方來源連結。
 - 答錯重試、重讀、完成回饋、首次發點、全島獎勵、進度印章。
@@ -70,13 +73,15 @@
 | `dist/poc/styles.css` | 桌機與手機介面、字體、顏色與狀態 |
 | `dist/poc/app.js` | 首次進入、選角、課程／測驗 UI、存檔整合 |
 | `dist/poc/scene.js` | Three.js 場景、角色、動作、鏡頭與選取 |
+| `dist/poc/guest-characters.js` | Gobkit 校園角色的模型、位置、比例與動畫設定 |
+| `dist/poc/models/gobkit/` | 本機部署的 Gobkit GLB 與 CC0 授權 |
 | `dist/poc/routes.js` | 道路節點、邊與尋路 |
 | `dist/poc/data.js` | 角色外觀、五區教材、題目與獎勵設定 |
 | `dist/poc/state.js` | 名稱驗證、玩家資料、完成規則、分數推導與儲存 |
 | `tests/poc.test.mjs` | 點數、存檔、名稱與道路連通測試 |
 | `scripts/vendor-three.mjs` | 複製鎖定版本的 Three.js 與授權到可部署目錄 |
 
-Third-party dependency：Three.js 0.187.0（MIT）；授權保留於 `dist/poc/vendor/THREE-LICENSE.txt`。場景核心依賴隨網站部署，不需外部 JavaScript CDN。Google Fonts 載入失敗時使用系統字體。
+Third-party dependencies：Three.js 0.187.0（MIT）及 Gobkit 角色（CC0 1.0）；授權分別保留於 `dist/poc/vendor/THREE-LICENSE.txt` 與 `dist/poc/models/gobkit/LICENSE.txt`。場景核心依賴隨網站部署，不需外部 JavaScript CDN。Google Fonts 載入失敗時使用系統字體。
 
 ## 本機執行
 
@@ -90,7 +95,7 @@ npm run preview
 
 ## 本輪驗證
 
-自動測試：六項通過，涵蓋存檔恢復、暱稱／Unicode、答錯不發點、重複完成、全島獎勵、損壞存檔與所有道路節點間的可達性。
+自動測試：七項通過，涵蓋存檔恢復、暱稱／Unicode、答錯不發點、重複完成、全島獎勵、損壞存檔、所有道路節點間的可達性，以及 Gobkit GLB／動畫片段完整性。
 
 瀏覽器：ChatGPT in-app Chromium；桌機 1280×720 與手機窄視窗 390×844。已實際操作建立人物、前往圖書室、閱讀、答錯再答對、重考、改人物及暱稱、重整恢復，以及五區全部完成後的 70 點與五個印章。
 
